@@ -1,7 +1,18 @@
 import sys
 import whisper
+import torch
 
-target_file=sys.argv[1]
+audio_data = whisper.load_audio(sys.argv[1])
 
-model = whisper.load_model("large-v2")
-result = model.transcribe(target_file, verbose=True, language="ja")
+model = whisper.load_model("medium", device="cuda")
+
+_ = model.cuda()
+
+with torch.no_grad():
+    result = model.transcribe(
+            audio_data, 
+            verbose=False, 
+            language="japanese",
+            beam_size=1,
+            fp16=True
+    )
